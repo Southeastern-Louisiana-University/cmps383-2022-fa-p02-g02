@@ -20,23 +20,31 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/get-all-products", () =>
+app.MapGet("/api/products", () =>
 {
     return Products;
-});
+})
+.WithName("GET");
 
-app.MapPost("/api/create-product", (ProductDto product) =>
+app.MapPost("/api/products", (ProductDto product) =>
 {
     if (!Products.Where(p => p.Id == product.Id).Any())
     {
         Products.Add(product);
+        return Results.StatusCode(201);
     }
-});
+    else
+    {
+        return Results.StatusCode(400);
+    }
+})
+.WithName("POST");
 
 app.Run();
 
 //see: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0
 // Hi 383 - this is added so we can test our web project automatically. More on that later
+
 public partial class Program 
 {
     public static List<ProductDto> Products = new List<ProductDto>
