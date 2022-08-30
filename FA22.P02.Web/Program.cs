@@ -47,8 +47,17 @@ app.MapDelete("/api/products/{id}", (int id) =>
     {
         var product = Products.First(p => p.Id == id);
         Products.Remove(product);
+
+
+        return Results.Ok();
+
     }
-});
+    else
+    {
+
+        return Results.BadRequest();
+    }
+    });
 
 
 app.Run();
