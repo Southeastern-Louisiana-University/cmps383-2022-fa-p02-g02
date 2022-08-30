@@ -40,6 +40,15 @@ app.MapPost("/api/create-product", (ProductDto product) =>
     }
 });
 
+app.MapDelete("/api/delete-product", (ProductDto product) =>
+{
+
+    if (Products.Where(p => p.Id == !product.Id).Any())
+{
+        Products.Delete(product);
+    
+});
+
 app.Run();
 
 //see: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0
