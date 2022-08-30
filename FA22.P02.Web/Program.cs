@@ -40,14 +40,16 @@ app.MapPost("/api/create-product", (ProductDto product) =>
     }
 });
 
-app.MapDelete("/api/delete-product", (ProductDto product) =>
+app.MapDelete("/api/delete-product", (int id) =>
 {
 
-    if (Products.Where(p => p.Id == !product.Id).Any())
-{
-        Products.Delete(product);
-    
+    if (Products.Where(p => p.Id == id).Any())
+    {
+        ProductDto product = Products.Where(p => p.Id == id).First();
+        Products.Remove(product);
+    }
 });
+
 
 app.Run();
 
