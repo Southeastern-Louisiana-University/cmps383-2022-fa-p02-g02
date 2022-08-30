@@ -45,7 +45,7 @@ app.MapDelete("/api/products/{id}", (int id) =>
 
     if (Products.Where(p => p.Id == id).Any())
     {
-        ProductDto product = Products.Where(p => p.Id == id).First();
+        var product = Products.First(p => p.Id == id);
         Products.Remove(product);
     }
 });
