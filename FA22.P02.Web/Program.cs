@@ -1,4 +1,5 @@
 using FA22.P02.Web.Features;
+using Microsoft.AspNetCore.Builder;
 using System.Reflection.Metadata.Ecma335;
 using static FA22.P02.Web.Features.Products;
 
@@ -24,6 +25,12 @@ app.MapGet("/api/get-all-products", () =>
 {
     return Products;
 });
+
+app.MapGet("/api/products/{id}", (int id) =>
+{
+    return Products.Where(p => p.Id == id).FirstOrDefault();
+})
+.WithName("GET");
 
 app.MapPost("/api/create-product", (ProductDto product) =>
 {
