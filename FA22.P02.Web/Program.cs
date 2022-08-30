@@ -40,7 +40,7 @@ app.MapPost("/api/create-product", (ProductDto product) =>
     }
 });
 
-app.MapDelete("/api/delete-product", (int id) =>
+app.MapDelete("/api/products/{id}", (int id) =>
 {
 
     if (Products.Where(p => p.Id == id).Any())
