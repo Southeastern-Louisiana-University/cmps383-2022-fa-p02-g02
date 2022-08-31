@@ -26,17 +26,28 @@ app.MapGet("/api/products", () =>
 
 app.MapGet("/api/products/{id}", (int id) =>
 {
-    return Products.Where(p => p.Id == id).FirstOrDefault();
+    if (Products.Where(p => p.Id == id).Any())
+    {
+        var productToShow = Products.First(p => p.Id == id);
+
+        return Results.Ok(productToShow);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
 })
 .WithName("GetById");
 
-app.MapPost("/api/create-product", (ProductDto product) =>
+app.MapPost("/api/products", (ProductDto product) =>
 {
-    if (!Products.Where(p => p.Id == product.Id).Any() && product.Id > 0 &&  product.Name != null && product.Name.Length <= 120 
+    if (!Products.Where(p => p.Id == product.Id).Any() && product.Name != null && product.Name.Length < 120 
         && product.Description != null && product.Price != null && product.Price > 0)
     {
+        product.Id = SetIdForProduct();
         Products.Add(product);
-        return Results.Created("/api/products/", product);
+
+        return Results.Created($"http://localhost/api/products/{product.Id}", product);
     }
     else
     {
@@ -76,19 +87,18 @@ app.MapDelete("/api/products/{id}", (int id) =>
 
     if (Products.Where(p => p.Id == id).Any())
     {
-        var product = Products.First(p => p.Id == id);
-        Products.Remove(product);
-
+        var productToDelete = Products.First(p => p.Id == id);
+        Products.Remove(productToDelete);
 
         return Results.Ok();
 
     }
     else
     {
-
-        return Results.BadRequest();
+        return Results.NotFound();
     }
-    });
+})
+.WithName("DELETE");
 
 
 app.Run();
@@ -124,4 +134,11 @@ public partial class Program
             Price = 14.99m,
         },
     };
+
+    public static int SetIdForProduct()
+    {
+        int id = Products.Select(p => p.Id).ToList().Max() + 1;
+
+        return id;
+    }
 }
