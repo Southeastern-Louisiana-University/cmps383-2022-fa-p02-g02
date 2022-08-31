@@ -1,5 +1,3 @@
-using FA22.P02.Web.Features;
-using System.Reflection.Metadata.Ecma335;
 using static FA22.P02.Web.Features.Products;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,17 +26,44 @@ app.MapGet("/api/products", () =>
 
 app.MapPost("/api/products", (ProductDto product) =>
 {
-    if (!Products.Where(p => p.Id == product.Id).Any())
+    if (!Products.Where(p => p.Id == product.Id).Any() && product.Id > 0 &&  product.Name != null && product.Name.Length <= 120 
+        && product.Description != null && product.Price != null && product.Price > 0)
     {
         Products.Add(product);
-        return Results.StatusCode(201);
+        return Results.Created("/api/products/", product);
     }
     else
     {
-        return Results.StatusCode(400);
+        return Results.BadRequest();
     }
 })
 .WithName("POST");
+
+app.MapPut("/api/products/{id}", (int id, ProductDto editedProduct) =>
+{
+    if (Products.Where(p => p.Id == id).Any())
+    {
+        if (editedProduct.Id > 0 && editedProduct.Name != null && editedProduct.Name.Length <= 120
+            && editedProduct.Description != null && editedProduct.Price != null && editedProduct.Price > 0)
+        {
+            var productToEdit = Products.FirstOrDefault(p => p.Id == id);
+         
+            productToEdit.Id = editedProduct.Id;
+            productToEdit.Name = editedProduct.Name;
+            productToEdit.Description = editedProduct.Description;
+            productToEdit.Price = editedProduct.Price;
+
+            return Results.Ok(editedProduct);
+        }
+
+        return Results.BadRequest();
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+})
+.WithName("PUT");
 
 app.Run();
 
