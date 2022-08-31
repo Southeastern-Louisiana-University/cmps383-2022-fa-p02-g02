@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+using FA22.P02.Web.Features;
+using Microsoft.AspNetCore.Builder;
+using System.Reflection.Metadata.Ecma335;
+>>>>>>> origin/Brandon's-Commits
 using static FA22.P02.Web.Features.Products;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +31,12 @@ app.MapGet("/api/products", () =>
 .WithName("GET");
 
 app.MapPost("/api/products", (ProductDto product) =>
+app.MapGet("/api/products/{id}", (int id) =>
+{
+    return Products.Where(p => p.Id == id).FirstOrDefault();
+})
+.WithName("GET");
+
 {
     if (!Products.Where(p => p.Id == product.Id).Any() && product.Id > 0 &&  product.Name != null && product.Name.Length <= 120 
         && product.Description != null && product.Price != null && product.Price > 0)
@@ -64,6 +76,26 @@ app.MapPut("/api/products/{id}", (int id, ProductDto editedProduct) =>
     }
 })
 .WithName("PUT");
+
+app.MapDelete("/api/products/{id}", (int id) =>
+{
+
+    if (Products.Where(p => p.Id == id).Any())
+    {
+        var product = Products.First(p => p.Id == id);
+        Products.Remove(product);
+
+
+        return Results.Ok();
+
+    }
+    else
+    {
+
+        return Results.BadRequest();
+    }
+    });
+
 
 app.Run();
 
